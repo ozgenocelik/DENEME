@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>His Sırdaşı - Özlü Sözler ve Resimli Söz Üretme Aracı</title>
+    <meta name="description" content="His Sırdaşı ile en güzel özlü sözleri keşfedin. Duygusal, motivasyon ve başarı üzerine özsözü bulma ve resimli olarak indirme asistanı.">
+    <meta name="keywords" content="özsözü bulma, özlü sözler, resimli sözler, motivasyon sözleri, duygusal sözler, his sırdaşı">
+    <meta name="author" content="His Sırdaşı">
+    
+    <!-- Open Graph (Sosyal Medya) Paylaşım Etiketleri -->
+    <meta property="og:title" content="His Sırdaşı - Özlü Sözler">
+    <meta property="og:description" content="Özsözü bulun, paylaşın ve resim olarak indirin.">
+    <meta property="og:type" content="website">
+    
+    <!-- JSON-LD Yapılandırılmış Veri (Google için) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "His Sırdaşı",
+      "description": "Özsözü bulma ve resimli söz üretme uygulaması.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All"
+    }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Caveat:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Firebase SDK (v9+) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <main class="container">
+        <header>
+            <div class="header-top">
+                <h1>His Sırdaşı ✨</h1>
+                <div id="userProfile" class="user-profile">
+                    <button id="syncBtn" class="sync-icon-btn" title="Profil ve Senkronizasyon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span id="activeUserName" class="sync-btn-text">Giriş Yap</span>
+                    </button>
+                </div>
+            </div>
+            <p>Hangi konuda bir söz okumak istersin?</p>
+        </header>
+
+        <section class="interaction-area">
+            <div class="input-group">
+                <input type="text" id="topicInput" placeholder="Örn: duygusal, başarı, motivasyon, aşk..." autocomplete="off">
+                <button id="generateBtn">Söz Üret</button>
+            </div>
+            <div class="suggestion-chips">
+                <span class="chip" data-topic="duygusal">Duygusal</span>
+                <span class="chip" data-topic="motivasyon">Motivasyon</span>
+                <span class="chip" data-topic="aşk">Aşk</span>
+                <span class="chip" data-topic="felsefe">Felsefe</span>
+                <span class="chip" data-topic="başarı">Başarı</span>
+            </div>
+        </section>
+
+        <!-- Sen indirebil diye ekrana gelen estetik KART tasarımı -->
+        <section class="quote-display-area" id="quoteDisplayArea" style="display: none;">
+            
+            <div class="instagram-card" id="quoteCard">
+                <!-- Doğrudan Yerel Resim Elementi -->
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1080&auto=format&fit=crop" id="cardBg" class="card-bg" alt="Arka Plan" crossorigin="anonymous">
+                <!-- Beyaz yazılar okunsun diye koyu katman -->
+                <div class="card-overlay"></div>
+                
+                <div class="card-content">
+                    <i class="quote-icon">"</i>
+                    <p id="quoteText" class="quote-text"></p>
+                    <p id="quoteAuthor" class="quote-author"></p>
+                </div>
+            </div>
+
+            <div class="quote-actions">
+                <button id="likeBtn" class="like-btn">
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span>Beğen</span>
+                </button>
+                <button id="downloadBtn" class="download-btn">
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="22" height="22"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    Resim Olarak İndir
+                </button>
+            </div>
+        </section>
+
+        <!-- Beğenilenler Listesi -->
+        <section class="favorites-section" id="favoritesSection">
+            <h2>Beğenilen Sözler ❤️</h2>
+            <div id="favoritesList" class="favorites-list">
+                <p class="empty-msg">Henüz beğenilen bir söz yok.</p>
+            </div>
+        </section>
+
+        <!-- İndirilenler Listesi -->
+        <section class="favorites-section downloads-section" id="downloadsSection">
+            <h2>İndirilen Sözler 📥</h2>
+            <div id="downloadsList" class="favorites-list">
+                <p class="empty-msg">Henüz indirilen bir söz yok.</p>
+            </div>
+        </section>
+    </main>
+    <!-- Görsel Önizleme Modali -->
+    <div id="downloadModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h3>Resmi Kaydet</h3>
+            <p class="modal-hint">Resmin üzerine basılı tutup "Kaydet" diyerek telefonunuza indirebilirsiniz.</p>
+            <div class="preview-container">
+                <img id="previewImage" src="" alt="Söz Önizleme">
+            </div>
+        </div>
+    </div>
+
+    <!-- Hoş Geldiniz Modali (İlk Girişte Sorulacak) -->
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content animate-pop">
+            <div class="modal-header-icon">👤</div>
+            <h3>Daha Önce Hesabınız Var mıydı?</h3>
+            <p>Eğer daha önce <b>omur9823</b> gibi bir isim belirleyip söz beğendiyseniz veya indirdiyseniz, o ismi yazarak tüm arşivinize anında ulaşabilirsiniz.</p>
+            
+            <div class="sync-input-group">
+                <input type="text" id="welcomeUserInput" placeholder="Kullanıcı Adınız (Örn: omur9823)" maxlength="20">
+                <button id="welcomeLoginBtn" class="primary-btn">Giriş Yap ve Arşivimi Getir</button>
+                <button id="skipLoginBtn" style="background: transparent; color: var(--text-dim); font-size: 0.9rem; margin-top: 5px;">Giriş Yapmadan Devam Et</button>
+            </div>
+        </div>
+    </div>
+    <div id="syncModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeSyncModal">&times;</span>
+            <div class="modal-header-icon">🛡️</div>
+            <h3>Favorilerinizi Her Yerden Görün!</h3>
+            <p class="modal-hint">Bir anahtar belirleyerek beğendiğiniz sözleri telefonunuzdan, bilgisayarınızdan veya gizli sekmelerden asla kaybetmeden görebilirsiniz.</p>
+            
+            <div class="sync-input-group">
+                <input type="text" id="syncKeyInput" placeholder="Sizin Anahtarınız (Örn: Cagan123)" maxlength="20">
+                <button id="saveSyncBtn" class="primary-btn">Buluta Bağlan ve Yedekle</button>
+            </div>
+            
+            <div id="syncLinkArea" style="display: none; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-dim);">Senkronizasyon Linkiniz (Linki Paylaşın):</p>
+                <div class="input-group" style="padding: 0.4rem; border-radius: 12px;">
+                    <input type="text" id="shareLinkInput" readonly style="font-size: 0.9rem; padding: 0.5rem;">
+                    <button id="copyLinkBtn" style="padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px;">Kopyala</button>
+                </div>
+            </div>
+            <p class="sync-status" id="syncStatus"></p>
+        </div>
+    </div>
+
+    <script src="quotes.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
